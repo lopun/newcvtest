@@ -40,13 +40,18 @@ def get_string(img_path):
 
     print(circles)
 
+    circle_mask = np.full(circle_img.shape, 255.)
+
     if circles is not None:
         print(circles.shape)
         a, b, c = circles.shape
         for i in range(b):
             cv2.circle(circle_img, (circles[0][i][0], circles[0][i][1]), circles[0][i][2], (255,255,255), 20, cv2.LINE_AA)
             cv2.circle(circle_img, (circles[0][i][0], circles[0][i][1]), 2, (0,0,0), 1, cv2.LINE_AA)
+            cv2.circle(circle_mask, (circles[0][i][0], circles[0][i][1]), circles[0][i][2], (0,0,0),  -1, 0)
 
+        bytemask = np.asarray(circle_mask, dtype=np.uint8)
+        circle_img = cv2.inpaint(circle_img, bytemask, inpaintRadius=5, flags=cv2.INPAINT_TELEA)
         cv2.imwrite(src_path + "circle.png", circle_img)
         cv2.imshow("Detected circles", circle_img)
 
